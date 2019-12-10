@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './main-page.css';
 import Header from './header'
-import { thisTypeAnnotation } from '@babel/types';
+import FeaturedHouse from '../main-page/featured-house';
 
 class App extends Component {
   state = {
@@ -37,6 +36,7 @@ class App extends Component {
       <h1>Loading ...</h1> :
       <div className="container">
         <Header subtitle="Providing houses all over the world" />
+        <FeaturedHouse house={this.state.featuredHouse} />
       </div>
      );
   }
