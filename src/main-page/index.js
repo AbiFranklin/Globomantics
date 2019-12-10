@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import './main-page.css';
 import Header from './header'
-import FeaturedHouse from '../main-page/featured-house';
+import FeaturedHouse from './featured-house';
+import HouseFilter from './house-filter';
+import House from '../house';
+import SearchResults from '../search-results'
 
 class App extends Component {
   state = {
@@ -19,6 +22,7 @@ class App extends Component {
       this.allHouses = allHouses;
       this.determineFeaturedHouse();
       this.setState({ loading: false });
+      this.determineUniqueCountries();
     })
   }
 
@@ -29,14 +33,45 @@ class App extends Component {
       this.setState({ featuredHouse });
     }
   }
+
+  determineUniqueCountries = () => {
+    const countries = this.allHouses ?
+    Array.from (new Set(this.allHouses.map(h => h.country)))
+    : [];
+    countries.unshift(null);
+    this.setState({ countries })
+  }
+
+  filterhouse = (country) => {
+    this.setState({ activeHouse: null })
+    const filteredHouses = this.allHouses.filter((h) => h.country === country);
+    this.setState({ filteredHouses });
+    this.setState({ country });
+  }
+
+  setActiveHouse = (house) => {
+    this.setState({ activeHouse: house })
+  }
   
   render() { 
+    let activeComponent = null;
+    if (this.state.country) {
+      activeComponent = <SearchResults country={this.state.country}
+         filteredHouses={this.state.filteredHouses} setActiveHouse={this.setActiveHouse} />;
+    }
+    if (this.state.activeHouse) {
+      activeComponent = <House house={this.state.activeHouse} />
+    }
+    if (!activeComponent) {
+      activeComponent = <FeaturedHouse house={this.state.featuredHouse} />
+    }
     return ( 
       this.state.loading ?
       <h1>Loading ...</h1> :
       <div className="container">
         <Header subtitle="Providing houses all over the world" />
-        <FeaturedHouse house={this.state.featuredHouse} />
+        <HouseFilter countries={this.state.countries} filterHouses={this.filterhouse} />
+        {activeComponent}
       </div>
      );
   }
